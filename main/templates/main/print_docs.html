@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة طلبات الطباعة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        body { font-family: 'Tajawal', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- الشريط الإرشادي الجانبي (Instructional Sidebar) -->
+        <aside class="lg:col-span-4 bg-gradient-to-br from-green-600 to-emerald-700 text-white rounded-2xl p-6 shadow-xl border border-green-500/20 lg:sticky lg:top-8 order-2 lg:order-1">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-white/20 p-3 rounded-xl flex items-center justify-center">
+                    <i class="fa-brands fa-whatsapp text-2xl text-green-300"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">إرشاد هام للزبائن</h3>
+                    <p class="text-xs text-green-100">تأكيد الطلب بسرعة</p>
+                </div>
+            </div>
+
+            <p class="text-sm leading-relaxed text-green-50 font-medium bg-white/10 p-4 rounded-xl border border-white/10 backdrop-blur-sm">
+                "زبائننا الكرام كل ما عليكم هو تأكيد الطلب عبر الواتساب فقط بالضغط على زر <span class="bg-gray-900 text-white px-2 py-0.5 rounded text-xs font-bold inline-flex items-center gap-1"><i class="fa-solid fa-folder-open text-xs"></i> طلبات</span> في الخطوة النهائية."
+            </p>
+
+            <div class="mt-4 pt-4 border-t border-white/10 text-xs text-green-100 space-y-2">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-check-circle text-green-300"></i>
+                    <span>إرسال التفاصيل مباشرة للمحل</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-check-circle text-green-300"></i>
+                    <span>مراجعة الحساب الإجمالي قبل الاعتماد</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- نموذج الطباعة الرئيسي -->
+        <main class="lg:col-span-8 bg-white rounded-2xl shadow-lg p-6 sm:p-8 order-1 lg:order-2">
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6 border-b pb-3">
+                <i class="fa-solid fa-print text-blue-600 ml-2"></i>نموذج طلب طباعة جديد
+            </h2>
+
+            <form id="printForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                <!-- بيانات المستخدم -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">الاسم الكامل</label>
+                        <input type="text" id="userName" required placeholder="أدخل اسمك" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">رقم الهاتف</label>
+                        <input type="tel" id="userPhone" required maxlength="10" inputmode="numeric" placeholder="06XXXXXXXX" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- قسم: الطبع العادي -->
+                <div class="border border-blue-100 bg-blue-50/50 p-4 rounded-xl space-y-3">
+                    <div class="flex items-center justify-between">
+                        <p class="font-bold text-blue-900 underline underline-offset-4 decoration-2 decoration-blue-500">
+                            <i class="fa-regular fa-file-lines ml-1"></i>الطبع العادي
+                        </p>
+                        <span class="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full font-medium">
+                            <i class="fa-solid fa-circle-info ml-1"></i>10 دج / صفحة
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                        <div class="sm:col-span-6">
+                            <input type="file" id="file_or_image" multiple class="block w-full text-sm text-gray-500 file:ml-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        </div>
+                        <div class="sm:col-span-4">
+                            <input type="number" id="pages_file" min="1" placeholder="عدد الصفحات" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <button type="button" id="saveFile" onclick="addNormalFile()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 rounded-lg text-sm transition">تم</button>
+                        </div>
+                    </div>
+                    <div id="normalFilesList" class="space-y-1"></div>
+                </div>
+
+                <!-- قسم: Recto Verso -->
+                <div class="border border-amber-100 bg-amber-50/50 p-4 rounded-xl space-y-3">
+                    <div class="flex items-center justify-between">
+                        <p class="font-bold text-amber-900 underline underline-offset-4 decoration-2 decoration-amber-500">
+                            <i class="fa-regular fa-copy ml-1"></i>Recto Verso
+                        </p>
+                        <span class="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full font-medium">
+                            <i class="fa-solid fa-circle-info ml-1"></i>20 دج / صفحة
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">الواجهة 1 (Recto)</label>
+                            <input type="file" id="recto1" class="block w-full text-xs text-gray-500 file:ml-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-amber-100 file:text-amber-800">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">الواجهة 2 (Verso)</label>
+                            <input type="file" id="recto2" class="block w-full text-xs text-gray-500 file:ml-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-amber-100 file:text-amber-800">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center pt-2">
+                        <div class="sm:col-span-10">
+                            <input type="number" id="pages_recto" min="1" placeholder="عدد الصفحات" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <button type="button" id="saveRecto" onclick="addRectoVersoFile()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 px-3 rounded-lg text-sm transition">تم</button>
+                        </div>
+                    </div>
+                    <div id="rectoFilesList" class="space-y-1"></div>
+                </div>
+
+                <!-- أزرار الإجراءات الأصليين -->
+                <div class="flex gap-3 pt-4 border-t">
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow transition duration-200">
+                        تسجيل الطلب
+                    </button>
+                    <button type="button" id="ordersBtn" disabled onclick="toggleModal(true)" 
+                        class="relative bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-xl shadow transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                        طلبات
+                        <span id="badge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center border-2 border-white">0</span>
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <!-- نافذة Modal للطلبات -->
+    <div id="ordersModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-xl w-full max-h-[80vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="p-4 bg-gray-800 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-folder-open ml-2"></i>قائمة الطلبات المضافة</h3>
+                <button onclick="toggleModal(false)" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            
+            <div id="modalContent" class="p-4 overflow-y-auto space-y-4 flex-1">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+            </div>
+
+            <div class="p-4 border-t bg-gray-50 text-left">
+                <button onclick="toggleModal(false)" class="bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+  <script>
+    let ordersList = [];
+    let tempFiles = [];
+
+    const PRICE_NORMAL = 10;
+    const PRICE_RECTO = 20;
+    const SHOP_PHONE = "213600000000";
+
+    // الحصول على CSRF Token من كوكي Django
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedName = localStorage.getItem('printer_user_name');
+        const savedPhone = localStorage.getItem('printer_user_phone');
+        if (savedName) document.getElementById('userName').value = savedName;
+        if (savedPhone) document.getElementById('userPhone').value = savedPhone;
+    });
+
+    function addNormalFile() {
+        const fileInput = document.getElementById('file_or_image');
+        const pagesInput = document.getElementById('pages_file');
+
+        if (fileInput.files.length === 0 || !pagesInput.value || pagesInput.value <= 0) {
+            alert('يرجى اختيار ملف وإدخال عدد صفحات صحيح');
+            return;
+        }
+
+        const pages = parseInt(pagesInput.value);
+
+        for (let file of fileInput.files) {
+            tempFiles.push({
+                type: 'طبع عادي',
+                fileName: file.name,
+                pages: pages,
+                price: pages * PRICE_NORMAL
+            });
+        }
+
+        renderTempFiles();
+        fileInput.value = '';
+        pagesInput.value = '';
+    }
+
+    function addRectoVersoFile() {
+        const recto1 = document.getElementById('recto1');
+        const recto2 = document.getElementById('recto2');
+        const pagesInput = document.getElementById('pages_recto');
+
+        if (!recto1.files[0] || !recto2.files[0] || !pagesInput.value || pagesInput.value <= 0) {
+            alert('يرجى اختيار الواجهتين وإدخال عدد صفحات صحيح');
+            return;
+        }
+
+        const pages = parseInt(pagesInput.value);
+
+        tempFiles.push({
+            type: 'Recto-Verso',
+            fileName: `${recto1.files[0].name} + ${recto2.files[0].name}`,
+            pages: pages,
+            price: pages * PRICE_RECTO
+        });
+
+        renderTempFiles();
+        recto1.value = '';
+        recto2.value = '';
+        pagesInput.value = '';
+    }
+
+    function renderTempFiles() {
+        const normalList = document.getElementById('normalFilesList');
+        const rectoList = document.getElementById('rectoFilesList');
+        
+        normalList.innerHTML = tempFiles.filter(f => f.type === 'طبع عادي').map(f => 
+            `<div class="text-xs bg-white p-2 rounded border flex justify-between items-center">
+                <span>📄 ${f.fileName} (${f.pages} صفحات)</span>
+                <div>
+                    <span class="text-red-600 font-bold ml-2">${f.price} دج</span>
+                    <span class="text-green-600 font-semibold">جاهز</span>
+                </div>
+             </div>`
+        ).join('');
+
+        rectoList.innerHTML = tempFiles.filter(f => f.type === 'Recto-Verso').map(f => 
+            `<div class="text-xs bg-white p-2 rounded border flex justify-between items-center">
+                <span>📑 ${f.fileName} (${f.pages} صفحات)</span>
+                <div>
+                    <span class="text-red-600 font-bold ml-2">${f.price} دج</span>
+                    <span class="text-amber-600 font-semibold">جاهز</span>
+                </div>
+             </div>`
+        ).join('');
+    }
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+
+        if (tempFiles.length === 0) {
+            alert('يرجى إضافة ملف واحد على الأقل وتأكيده بضغط "تم" قبل الإرسال.');
+            return;
+        }
+
+        const name = document.getElementById('userName').value.trim();
+        const phone = document.getElementById('userPhone').value.trim();
+
+        localStorage.setItem('printer_user_name', name);
+        localStorage.setItem('printer_user_phone', phone);
+
+        const totalOrderPrice = tempFiles.reduce((sum, item) => sum + item.price, 0);
+
+        const newOrder = {
+            id: Date.now(),
+            name: name,
+            phone: phone,
+            items: [...tempFiles],
+            totalPrice: totalOrderPrice
+        };
+
+        ordersList.push(newOrder);
+
+        tempFiles = [];
+        document.getElementById('file_or_image').value = '';
+        document.getElementById('pages_file').value = '';
+        document.getElementById('recto1').value = '';
+        document.getElementById('recto2').value = '';
+        document.getElementById('pages_recto').value = '';
+        renderTempFiles();
+
+        updateOrdersButton();
+        alert('تم تسجيل الطلب بنجاح في القائمة!');
+    }
+
+    function updateOrdersButton() {
+        const ordersBtn = document.getElementById('ordersBtn');
+        const badge = document.getElementById('badge');
+
+        if (ordersList.length > 0) {
+            ordersBtn.disabled = false;
+            badge.innerText = ordersList.length;
+            badge.classList.remove('hidden');
+        } else {
+            ordersBtn.disabled = true;
+            badge.classList.add('hidden');
+        }
+    }
+
+    function toggleModal(show) {
+        const modal = document.getElementById('ordersModal');
+        if (show) {
+            renderModalContent();
+            modal.classList.remove('hidden');
+        } else {
+            modal.classList.add('hidden');
+        }
+    }
+
+    function renderModalContent() {
+        const content = document.getElementById('modalContent');
+        if (ordersList.length === 0) {
+            content.innerHTML = `<p class="text-center text-gray-500 py-8">لا توجد طلبات مسجلة حالياً</p>`;
+            return;
+        }
+
+        content.innerHTML = ordersList.map((order) => `
+            <div class="border rounded-xl p-4 bg-gray-50 relative space-y-3">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <p class="font-bold text-gray-800 text-sm">👤 ${order.name} (${order.phone})</p>
+                    <button onclick="deleteOrder(${order.id})" class="text-red-500 hover:text-red-700 text-xs font-semibold">
+                        <i class="fa-solid fa-trash ml-1"></i>حذف
+                    </button>
+                </div>
+                
+                <div class="space-y-1">
+                    ${order.items.map((item, iIdx) => `
+                        <div class="flex justify-between items-center text-xs bg-white p-2 rounded border">
+                            <div>
+                                <span class="font-semibold text-blue-600">[${item.type}]</span> 
+                                <span class="text-gray-700">${item.fileName}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="bg-gray-100 px-2 py-0.5 rounded text-gray-600">${item.pages} ص</span>
+                                <span class="text-red-600 font-bold">${item.price} دج</span>
+                                <button onclick="removeItemFromOrder(${order.id},${iIdx})" class="text-red-400 hover:text-red-600 text-base">
+                                    &times;
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+                    <div>
+                        <span class="text-xs text-gray-600">المجموع: </span>
+                        <span class="text-sm font-bold text-red-600">${order.totalPrice} دج</span>
+                    </div>
+                    <button onclick="sendOrderToWhatsApp(${order.id})" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow transition flex items-center gap-1">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> تأكيد عبر الواتساب
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // إرسال الطلب إلكترونياً للحفظ في قاعدة البيانات ثم التوجيه للواتساب
+    async function sendOrderToWhatsApp(orderId) {
+        const order = ordersList.find(o => o.id === orderId);
+        if (!order) return;
+
+        try {
+            // 1. حفظ الطلب في Django Database
+            const response = await fetch('/requests/print-docs/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'json/application',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(order)
+            });
+
+            const data = await response.json();
+
+            // 2. تجهيز رسالة الواتساب
+            let message = `مرحباً، أرغب في تأكيد طلب طباعة جديد 🖨️\n\n`;
+            message += `👤 *الاسم:* ${order.name}\n`;
+            message += `📞 *الرقم:* ${order.phone}\n`;
+            if (data.is_verified) {
+                message += `✅ *حالة الحساب:* مؤكد مسبقاً\n\n`;
+            } else {
+                message += `ℹ️ *رقم الطلب:* #${data.request_id}\n\n`;
+            }
+            message += `📋 *تفاصيل المستندات:*\n`;
+
+            order.items.forEach((item, index) => {
+                message += `${index + 1}. [${item.type}] ${item.fileName} - (${item.pages} صفحة) -> ${item.price} دج\n`;
+            });
+
+            message += `\n💰 *الإجمالي النهائي:* ${order.totalPrice} دج\n`;
+
+            const whatsappUrl = `https://wa.me/${SHOP_PHONE}?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappUrl, '_blank');
+            deleteOrder(orderId);
+
+        } catch (error) {
+            console.error('Error saving order:', error);
+            alert('حدث خطأ أثناء الاتصال بالسيرفر، سيتم توجيهك للواتساب مباشرة.');
+            
+            // في حال حدوث خطأ بالسيرفر، فتح الواتساب كملاذ أخير
+            let message = `مرحباً، أرغب في تأكيد طلب طباعة جديد 🖨️\n\n👤 *الاسم:* ${order.name}\n📞 *الرقم:* ${order.phone}\n💰 *الإجمالي:* ${order.totalPrice} دج\n`;
+            window.open(`https://wa.me/${SHOP_PHONE}?text=${encodeURIComponent(message)}`, '_blank');
+            deleteOrder(orderId);
+        }
+    }
+
+    function deleteOrder(orderId) {
+        ordersList = ordersList.filter(o => o.id !== orderId);
+        updateOrdersButton();
+        renderModalContent();
+        if (ordersList.length === 0) toggleModal(false);
+    }
+
+    function removeItemFromOrder(orderId, itemIndex) {
+        const order = ordersList.find(o => o.id === orderId);
+        if (order) {
+            order.items.splice(itemIndex, 1);
+            if (order.items.length === 0) {
+                deleteOrder(orderId);
+            } else {
+                order.totalPrice = order.items.reduce((sum, item) => sum + item.price, 0);
+                renderModalContent();
+            }
+        }
+    }
+</script>

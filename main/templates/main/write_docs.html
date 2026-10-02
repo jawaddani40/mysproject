@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نموذج رفع الملفات وطلب استبدال النص</title>
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+
+
+<style>
+    body {
+        font-family: sans-serif;
+        background: #f5f7fb;
+        margin: 0;
+        padding: 20px;
+        direction: rtl;
+    }
+
+    .container-center, .replacement-section, .final-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+   .page-wrapper {
+    position: relative; /* مهم */
+}
+    .replacement-section{
+    width: 100%;
+}
+
+
+
+
+     .error {
+        border : 2px solid red ; }
+      #msg {
+        color : red ;
+        margin-left : 10px ;
+        font-size: 14px;
+         
+        }
+     
+    .row  {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 100%;     
+    }
+    
+    .replacement-section .row {
+        width: 400px;
+    }
+
+    .final-section {
+        display: none;
+    }
+
+    .final-wrapper {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        width: 400px;
+        text-align: center;
+    }
+    .txt {
+        color: #180404;
+        font-size: large;
+        text-decoration:gold ;
+        font-family: Arial, Helvetica, sans-serif;
+        
+ }
+
+    input, button {
+        padding: 10px;
+        font-size: 15px;
+        border-radius: 6px;
+        border: 1px solid #141212;
+        
+    }
+    input:disabled {
+        background-color: #f1eded;
+
+    }
+    
+     #leftbtn {
+    margin-left:699px;
+    background-color: rgb(57, 217, 81);
+    }
+     
+     #rightbtn {
+    margin-right:699px ;
+    background-color:rgb(241, 207, 53)
+
+     }
+    
+    
+    button:disabled {
+        opacity: 0,5 ;
+        cursor: not-allowed;
+        background-color: #646262;
+    }
+
+     .batan {
+    display: flex ;
+    flex-direction: row ; 
+    gap: 10px ;
+
+     }
+
+    button {
+        background: #2b7cff;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* الخريطة */
+    #map {
+        width: 100%;
+        height: 300px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+
+<!-- القسم الأول -->
+<div class="container-center" id="section1">
+    <div class="row">
+        <p class="txt">انشاء اسم للملف</p>
+            <input type="text" id="pagename" placeholder="أنشىء أي اسم للملف">
+            <span id="msg3"></span> 
+        
+        <p class="txt">اختر ملف أو صورة</p>
+            <input type="file" multiple required>
+            
+        
+    </div>
+</div>
+
+<!-- القسم الثاني (بدون خريطة) -->
+<div class="replacement-section" id="section2">
+    <div class="row">
+            
+        <p>استبدل الجملة/الكلمة:
+            <input id="A" placeholder="text" type="text">
+    
+        </p>
+        <span id="msg"></span> 
+                       <div id="overlay" style="
+                             display: none;
+                              position: fixed;
+                              top: 0;
+                              left: 0;
+                               width: 100%;
+                               height: 100%;
+                              background: rgba(0,0,0,0.6);
+                                  z-index: 1;
+                                   "></div>
+        
+        
+        <button type="button" id="leftbtn"  >lool</button>
+        <div  id="rightbtn"></div>
+        
+
+        
+            <div id="box" style="
+            display: none;
+            position: absolute;
+            width : auto ;
+            padding: 10 px ;
+            margin-top:10px;
+            border: 2px solid black ;
+            background: #fffbfb;
+            z-index: 2;
+           
+            "></div>
+    
+
+        <p>الموجودة في السطر:     
+            <input min="1" id="Aline" type="number">
+            <span  id="msg2"></span>
+        </p>
+        <p> من الصفحة : <input id="Apage" type="number"></p>
+        <p>بـ:
+            <input id="newA" placeholder="newtxt" type="text">
+        </p>
+        <input type="file" id="fileInput" multiple hidden>
+                <div class="batan">
+                   <button  type="button" id="changer">استبدال</button>
+                   <button disabled type="button" id="samepage"  >++</button>
+                   <button disabled type="button" id="newpage" >+</button> 
+                </div>
+                   
+
+
+        <input disabled id="page_nbr" type="number" placeholder="عدد الصفحات" required>
+
+        <button disabled type="submit">انهاء الطلب</button>
+            
+        <button disabled type="button" id="sendRequest">
+            إرسال طلب الاستبدال
+        </button>
+    </div>
+</div>
+
+<!-- القسم الثالث (الخريطة هنا) -->
+<div class="final-section" id="section3">
+    <div class="final-wrapper">
+        <form method="post">
+            {% csrf_token %}
+
+            <input type="text" name="full_name" placeholder="الاسم الكامل" required>
+            <input type="text" name="phone" placeholder="رقم الهاتف" required>
+            <input type="email" name="email" placeholder="البريد الإلكتروني" required>
+
+            <h4>مكان وصول الملف:</h4>
+            <div id="map"></div>
+
+            <input type="text" id="location"
+                   placeholder="اختر الموقع من الخريطة"
+                   readonly required>
+
+            <h4>وقت وصول الملف:</h4>
+            <input type="datetime-local" required>
+
+            <button type="submit">إرسال الطلب</button>
+        </form>
+            
+    </div>
+</div>
+
+
+<script>
+    let mapInitialized = false;
+    let map, marker;
+
+    document.getElementById("sendRequest").onclick = function () {
+        document.getElementById("section1").style.display = "none";
+        document.getElementById("section2").style.display = "none";
+        document.getElementById("section3").style.display = "flex";
+
+        // إنشاء الخريطة فقط عند فتح القسم الثالث
+        if (!mapInitialized) {
+            map = L.map('map').setView([35.6971, -0.6308], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            map.on('click', function (e) {
+                if (marker) map.removeLayer(marker);
+                marker = L.marker(e.latlng).addTo(map);
+                document.getElementById('location').value =
+                    e.latlng.lat + ', ' + e.latlng.lng;
+            });
+
+            mapInitialized = true;
+        } else {
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 200);
+        }
+   
+    
+    
+    
+    };
+</script>
+<script>
+    const istabdil= document.getElementById ("A");
+    const line = document.getElementById ("Aline");
+    const new_change = document.getElementById ("newA");
+    const container = document.getElementById ("rightbtn")
+    const istibdal = document.getElementById ("changer")
+    const samepage = document.getElementById ("samepage")
+    const newpage = document.getElementById ("newpage")
+    const msg =document.getElementById("msg");
+    const msg2=document.getElementById("msg2")
+    const box=document.getElementById("box")
+    const overlay=document.getElementById("overlay")
+    const savedButtons = [];
+    const lool=document.getElementById("leftbtn")
+    const pagename=document.getElementById("pagename")
+    const msg3=document.getElementById("msg3")
+    
+    let num = 1 ;
+    
+    istibdal.onclick = function() {
+    if(pagename.value==="") {
+       msg3.innerText="يرجى اعطاء اسم للصفحة";
+       pagename.focus();return;}
+            msg3.innerText="";
+
+    if (istabdil.value === "") {
+        msg.innerText = "يرجى تعيين الجملة التي تود تغييرها";
+        istabdil.focus();return;
+    } 
+
+        msg.innerText = "";
+
+        if (line.value === "") {
+            msg2.innerText = "يرجى تحديد السطر";
+            line.focus();return
+        } 
+            msg2.innerText = "";
+           
+           
+            
+         samepage.disabled = false; 
+         newpage.disabled =false ;
+
+         
+
+
+
+        
+       
+       const data = {
+    tekt: istabdil.value,
+    tall: line.value,
+    big: new_change.value
+};
+      
+
+                              
+         let tekt =   istabdil.value ;  
+         let tall=    line.value ;
+         let big   =  new_change.value ;
+
+    const exists = savedButtons.some(function(item) {
+        return item.tekt === data.tekt &&
+               item.tall === data.tall &&
+               item.big === data.big;
+    });
+
+    if (exists) {
+        return;
+    }
+
+    savedButtons.push(data);
+
+
+
+
+
+
+
+
+
+
+
+         let  btn = document.createElement("button");
+            btn.innerText= "تغيير"+ num;
+
+            
+            btn.onclick= function()  {
+            overlay.style.display= "block" ;
+            box.style.display="block";
+            box.focus();
+           box.innerHTML =
+        "<span style='color:red;'>قمت بتغيير الجملة:</span> " + data.tekt +
+        "<br>" +
+        "<span style='color:red;'>الموجودة في السطر:</span> " + data.tall +
+        "<br>" +
+        "<span style='color:red;'>ب:</span> " + data.big;
+};
+
+            box.onclick= function()  {
+                overlay.style.display="none";
+                box.style.display="none";
+                
+                
+            }
+            
+        container.appendChild(btn);
+        num++;
+        
+
+
+    };
+                                                                     
+</script>
+
+
+
+
+
+</body>
+</html>

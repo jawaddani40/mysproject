@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استمارة طلب العمل</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background: #f4f4f4;
+            margin-top: 50px;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+            margin: auto;
+        }
+        input, button {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>استمارة طلب العمل</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="الاسم الكامل" required>
+        <input type="text" name="phone" placeholder="رقم الهاتف" required>
+
+        <button type="submit">إرسال الطلب</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة الرئيسية</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .batan{
+        background-color: chartreuse;
+        border-radius: 15px;
+        font-size: 45px;
+
+
+        }
+        .disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+    </style>
+</head>
+
+<body>
+    <h1>مرحباً بك في الصفحة الرئيسية</h1>
+
+    <p>مرحباً بك 👋</p>
+
+    <a href="{% url 'print_docs' %}" class="btn" >طبع الوثائق + توصيل</a>
+    <a href="{% url 'extract_docs' %}" class="btn disabled" >استخراج الوثائق و طبعها + توصيل</a>
+    <a href="{% url 'write_docs' %}" class="btn  ">خدمات كتابية</a>
+    <br>
+    <br>
+    <br>
+    <br>
+    
+    
+    <a href="{%url   'insc_onefd'%}" class="batan">تسجيل الدراسة عن بعد</a>
+</body>
+</html>

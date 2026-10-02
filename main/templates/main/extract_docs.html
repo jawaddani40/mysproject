@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استخراج الوثائق و طبعها + توصيل</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f4f4f4;
+            direction: rtl;
+            text-align: center;
+        }
+        h1 {
+            color: #e11515;
+        }
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            position: relative;
+        }
+        .btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 10px;
+            width: 150px;
+            text-decoration: none;
+            color: #333;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            cursor: pointer;
+        }
+        .btn img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background: #007bff;
+            color: white;
+            border-color: #0056b3;
+        }
+        .dropdown {
+            display:none;
+            flex-direction: column;
+            position: absolute;
+            top: 140px;
+            background: rgb(21, 21, 21);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            width: 180px;
+            z-index: 100;
+        }
+        .dropdown a {
+            padding: 10px;
+            text-decoration: none;
+            color: #e7e5e5;
+            border-bottom: 1px solid #eee;
+            transition: 0.3s;
+        }
+        .dropdown a:hover {
+            background: #007bff;
+            color: white;
+        }
+        .dropdown a:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>اختر نوع الوثيقة</h1>
+    <div class="btn-container">
+        
+        <!-- زر قطاع التعليم -->
+        <div class="btn" onclick="toggleDropdown('eduDropdown')">
+            <img src="{% static 'images/oned.jpg' %}" alt="قطاع التعليم">
+            قطاع التعليم
+            <div class="dropdown" id="eduDropdown">
+                <a href="{%url 'insc_onefd'%}">تسجيلات التعليم عن بعد</a>
+                <a href="#">البكالوريا</a>
+                <a href="#">كشوف النقاط</a>
+            </div>
+        </div>
+
+        <!-- زر البريد الجزائري -->
+        <div class="btn" onclick="toggleDropdown('postDropdown')">
+            <img src="{% static 'images/postdz.png' %}" alt="البريد الجزائري">
+            البريد الجزائري
+            <div class="dropdown" id="postDropdown">
+                <a href="{% url 'gold_card_form' %}">استمارة طلب البطاقة الذهبية</a>
+            </div>
+        </div>
+
+        <!-- زر وكالة التشغيل ANEM -->
+        <div class="btn" onclick="toggleDropdown('anemDropdown')">
+            <img src="{% static 'images/anem.jpg' %}" alt="وكالة التشغيل ANEM">
+            وكالة التشغيل ANEM
+            <div class="dropdown" id="anemDropdown">
+                <a href="{% url 'demand_trvl' %}">استمارة طلب العمل</a>
+                <a href="{% url 'ansej_anm' %}">شهادة التسجيل ANSEJ</a>
+            </div>
+        </div>
+
+        <!-- زر وزارة العدل -->
+        <div class="btn" onclick="toggleDropdown('justiceDropdown')">
+            <img src="{% static 'images/justice.jpg' %}" alt="وزارة العدل">
+            وزارة العدل
+            <div class="dropdown" id="justiceDropdown">
+                <a href="{% url 'm_justice' %}">شهادة السوابق العدلية</a>
+            </div>
+        </div>
+
+        <!-- باقي الأزرار -->
+        <div class="btn" onclick="toggleDropdown('cnasDropdown')">
+            <img src="{% static 'images/cnas.png' %}" alt="الضرائب و التأمينات">
+            الضرائب و التأمينات
+        <div class="dropdown" id="cnasDropdown">
+              <a href="{% url 'demand_aff' %}">شهادة الانتساب وعدم الانتساب</a>
+              <a href="#">تصاريح الضرائب و بعض وثائق المحاسبة</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(id) {
+            var dropdown = document.getElementById(id);
+            var allDropdowns = document.querySelectorAll(".dropdown");
+            allDropdowns.forEach(function(menu) {
+                if (menu !== dropdown) menu.style.display = "none";
+            });
+            dropdown.style.display = (dropdown.style.display === "flex") ? "none" : "flex";
+        }
+
+        // إخفاء القوائم عند الضغط خارجها
+        document.addEventListener("click", function(event) {
+            if (!event.target.closest(".btn")) {
+                document.querySelectorAll(".dropdown").forEach(function(menu) {
+                    menu.style.display = "none";
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شهادة التسجيل ANSAJ</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background: #f4f4f4;
+            margin-top: 50px;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+            margin: auto;
+        }
+        input, button {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #map {
+            height: 250px;
+            width: 90%;
+            margin: 10px auto;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* الشريط الجانبي */
+        .slide-panel {
+            position: fixed;
+            top: 0;
+            left: -300px; /* يبدأ خارج الشاشة */
+            width: 300px;
+            height: 100%;
+            background: white;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.2);
+            transition: left 0.4s ease;
+            padding: 20px;
+            z-index: 1000;
+            text-align: right;
+        }
+
+        .slide-panel.open {
+            left: 0;
+        }
+
+        .close-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-new {
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .btn-new:hover {
+            background: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <h2>شهادة التسجيل ANSAJ</h2>
+
+    <button class="btn-new" onclick="toggleSlide()">مسجل جديد</button>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="الاسم الكامل" required>
+        <input type="text" name="phone" placeholder="رقم الهاتف" required>
+        <input type="email" name="email" placeholder="البريد الإلكتروني" required>
+        <input type="password" name="password" placeholder="كلمة المرور" required>
+        <input type="number" id="pages_recto" name="pages_recto" placeholder="عدد الصفحات" required>
+
+        <h4>مكان وصول الملف:</h4>
+        <div id="map"></div>
+        <input type="text" id="location" name="location" placeholder="إحداثيات المكان" readonly required>
+
+        <h4>وقت وصول الملف:</h4>
+        <input type="datetime-local" name="delivery_time" required>
+
+        <button type="submit">إرسال الطلب</button>
+    </form>
+
+    <!-- الشريط الجانبي -->
+    <div id="slidePanel" class="slide-panel">
+        <button class="close-btn" onclick="toggleSlide()">إغلاق ✖</button>
+        <h3>تسجيل مستخدم جديد</h3>
+        <input type="text" placeholder="اسم المستخدم الجديد">
+        <input type="email" placeholder="البريد الإلكتروني">
+        <input type="password" placeholder="كلمة المرور">
+        <button>تأكيد التسجيل</button>
+    </div>
+
+    <script>
+        var map = L.map('map').setView([35.6971, -0.6308], 12); // وهران
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker;
+        map.on('click', function (e) {
+            if (marker) map.removeLayer(marker);
+            marker = L.marker(e.latlng).addTo(map);
+            document.getElementById('location').value = e.latlng.lat + ',' + e.latlng.lng;
+        });
+
+        function toggleSlide() {
+            document.getElementById("slidePanel").classList.toggle("open");
+        }
+    </script>
+</body>
+</html>

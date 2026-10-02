@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شهادة التسجيل ANSEJ</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background: #f4f4f4;
+            margin-top: 50px;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+            margin: auto;
+        }
+        input, button {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #map {
+            height: 250px;
+            width: 90%;
+            margin: 10px auto;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <title>شهادة التسجيل ANSEJ</title>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="الاسم الكامل" required>
+        <input type="text" name="phone" placeholder="رقم الهاتف" required>
+
+        <h4>مكان وصول الملف:</h4>
+        <div id="map"></div>
+        <input type="text" id="location" name="location" placeholder="إحداثيات المكان" readonly required>
+
+        <h4>وقت وصول الملف:</h4>
+        <input type="datetime-local" name="delivery_time" required>
+
+        <button type="submit">إرسال الطلب</button>
+    </form>
+
+    <script>
+        var map = L.map('map').setView([35.6971, -0.6308], 12); // إحداثيات وهران
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker;
+        map.on('click', function (e) {
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker(e.latlng).addTo(map);
+            document.getElementById('location').value = e.latlng.lat + ',' + e.latlng.lng;
+        });
+    </script>
+</body>
+</html>
