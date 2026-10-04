@@ -156,13 +156,14 @@
     </div>
 
   <script>
-    let ordersList = [];
-    let tempFiles = [];
+   let ordersList = [];
+let tempFiles = [];
 
-    const PRICE_NORMAL = 10;
-    const PRICE_RECTO = 20;
-    const SHOP_PHONE = "213600000000";
+const PRICE_NORMAL = 10;
+const PRICE_RECTO = 20;
 
+// 🟢 ضع رقم هاتفك الحقيقي هنا بالصيغة الدولية (مثال الجزائر: 213661234567)
+const SHOP_PHONE = "21379714618";
     // الحصول على CSRF Token من كوكي Django
     function getCookie(name) {
         let cookieValue = null;
@@ -380,12 +381,15 @@
             const response = await fetch('/requests/print-docs/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'json/application',
+                    'Content-Type': 'application/json',
                     'X-CSRFToken': getCookie('csrftoken'),
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify(order)
             });
+            if (!response.ok) {
+            throw new Error(`Server status: ${response.status}`);
+        }
 
             const data = await response.json();
 
